@@ -28,7 +28,9 @@ class CSPAlgorithms:
         # Returns an assignment of values to the variables such that the constraints are satisfied. None
         # if no assignment is found.
         assignments, solution_found = CSPAlgorithms.backtracking_helper(csp, False)
-        return assignments
+        if solution_found:
+            return assignments
+        return None
 
     @staticmethod
     def backtracking_helper(csp, solution_found):
