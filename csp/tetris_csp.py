@@ -38,10 +38,24 @@ class TetrisCSP(CSP):
             limit += TetrominoUtil.rotation_limit(var)
         for i in range(limit):
             rotation = i
+            lst_blocks = []
+            pruned_grid = tetromino.get_pruned_grid()
             row_count, col_count = tetromino.get_pruned_dimensions()
-            for r in range(self._rows - row_count + 1):
-                for c in range(self._cols - col_count + 1):
-                    domain.append(((r, c), rotation))
+            for rc in range(row_count):
+                for cc in range(col_count):
+                    if pruned_grid[rc][cc] != 0:
+                        lst_blocks.append((rc,cc))
+            grid = self._grid
+            for r in range(self._rows-row_count+1):
+                for c in range(self._cols-col_count+1):
+                    if grid[r][c] != 1:
+                        valid = True
+                        for block in lst_blocks:
+                            row, col = r + block[0], c+block[1]
+                            if grid[row][col] != 0:
+                                valid = False
+                        if valid:
+                            domain.append(((r, c), rotation))
             tetromino.rotate()
         return domain
 
