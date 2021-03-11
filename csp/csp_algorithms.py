@@ -26,9 +26,22 @@ class CSPAlgorithms:
 
     # Returns an assignment of values to the variables such that the constraints are satisfied. None
     # if no assignment is found.
-
-    raise NotImplementedError("Backtracking algorithm not implemented")
-
+    if not csp.unassigned_variables():
+        return csp.assignments()
+    var = csp.extract_unassigned()
+    for val in var.domain():
+        csp.assign(var, val)
+        constraintOK = True
+        for constraint in csp.constraints():
+            if csp.num_unassigned() == 0:
+              if not constraint.check(csp.variables(),csp.assignments()):
+                constraintOK = False
+                break
+        if constraintOK:
+            return CSPAlgorithms.backtracking(csp)
+    csp.unassign(var)
+    csp.unassigned_variables().append(var)
+    return csp.assignments()
   @staticmethod
   def forward_checking(csp):
     # Question 4, your foward checking algorithm goes here.

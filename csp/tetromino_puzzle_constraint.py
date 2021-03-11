@@ -36,7 +36,7 @@ class TetrominoPuzzleConstraint(Constraint):
             tetromino.rotate(rotate_count)
             pruned = tetromino.get_pruned_grid()
             for r in range(len(pruned)):
-                for c in range(len(pruned)):
+                for c in range(len(pruned[r])):
                     if pruned[r][c] != 0 and \
                       not MatrixUtil.valid_position(self._grid, r+row, c+col):
                         return False
