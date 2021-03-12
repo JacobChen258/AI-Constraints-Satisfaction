@@ -49,5 +49,29 @@ class TetrominoPuzzleConstraint(Constraint):
         # a possible satisfying assignment. This means you will have to check all possible assignments
         # which have this variable : value combination to see if any such assignments satisfy the
         # Tetromino Puzzle constraint.
-
-        raise NotImplementedError("Has Future method for TetrominoPuzzleConstraint is not implemented")
+        unassigned_vars = csp.unassigned_variables()
+        tetromino = TetrominoUtil.copy(var)
+        tetromino.rotate(val[1])
+        blocks = []
+        tetromino_grid = tetromino.get_pruned_grid()
+        dimension = tetromino.get_pruned_dimensions()
+        for r in range(dimension[0]):
+            for c in range(dimension[1]):
+                if tetromino_grid[r][c] != 0:
+                    blocks.append((val[0][0]+r, val[0][1]+c))
+        for v in unassigned_vars:
+            if v != var:
+                cur_domain = v.active_domain()[:]
+                cur_len = len(cur_domain)
+                for pos, n in cur_domain:
+                    temp_v = TetrominoUtil.copy(v)
+                    temp_v.rotate(n)
+                    temp_grid = temp_v.get_pruned_grid()
+                    temp_dim = temp_v.get_pruned_dimensions()
+                    for r in range(temp_dim[0]):
+                        for c in range(temp_dim[1]):
+                            if temp_grid[r][c] != 0 and (pos[0]+r, pos[1]+c) in blocks:
+                                cur_len -= 1
+                if cur_len == 0:
+                    return False
+        return True
