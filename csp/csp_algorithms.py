@@ -100,4 +100,24 @@ class CSPAlgorithms:
         #                                  on the constraints of the csp for the given variable.
         # CSPUtil.undo_pruning_for(var) --> undoes all pruning that was caused by forward checking the given variable.
 
-        raise NotImplementedError("GAC algorithm not implemented")
+        assignments, solution_found = CSPAlgorithms.gac_helper(csp, False)
+        if solution_found:
+            return assignments
+        return None
+
+    @staticmethod
+    def gac_helper(csp, solution_found):
+        if not csp.unassigned_variables():
+            return csp.assignments(), True
+        var = csp.extract_unassigned()
+        assignments = csp.assignments()
+        solution = solution_found
+        for val in var.active_domain():
+            csp.assign(var, val)
+            noDWO = True
+            if not CSPUtil.gac_enforce(csp, var):
+                noDWO = False
+            if noDWO:
+                assignments, solution = CSPAlgorithms.gac_helper(csp, solution_found)
+            CSPUtil.undo_pruning_for(var)
+        return assignments, solution
