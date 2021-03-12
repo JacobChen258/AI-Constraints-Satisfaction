@@ -37,6 +37,8 @@ class CSPAlgorithms:
         if not csp.unassigned_variables():
             return csp.assignments(), True
         var = csp.extract_unassigned()
+        assignments = csp.assignments()
+        solution = solution_found
         for val in var.domain():
             csp.assign(var, val)
             constraintOK = True
@@ -47,9 +49,6 @@ class CSPAlgorithms:
                         break
             if constraintOK:
                 assignments, solution = CSPAlgorithms.backtracking_helper(csp, solution_found)
-        if not solution:
-            csp.unassign(var)
-            csp.unassigned_variables().append(var)
         return assignments, solution
 
     @staticmethod
@@ -64,7 +63,30 @@ class CSPAlgorithms:
         #                                                 a forward check on the given constraint and variable.
         # CSPUtil.undo_pruning_for(var) --> undoes all pruning that was caused by forward checking the given variable.
 
-        raise NotImplementedError("Forward Checking algorithm not implemented")
+        assignments, solution_found = CSPAlgorithms.forwardchecking_helper(csp, False)
+        if solution_found:
+            return assignments
+        return None
+
+    @staticmethod
+    def forwardchecking_helper(csp, solution_found):
+        if not csp.unassigned_variables():
+            return csp.assignments(), True
+        var = csp.extract_unassigned()
+        assignments = csp.assignments()
+        solution = solution_found
+        for val in var.active_domain():
+            csp.assign(var, val)
+            noDWO = True
+            for constraint in csp.constraints():
+                if csp.num_unassigned() == 1:
+                    if not CSPUtil.forward_check(csp, constraint, var):
+                        noDWO = False
+                        break
+            if noDWO:
+                assignments, solution = CSPAlgorithms.forwardchecking_helper(csp, solution_found)
+            CSPUtil.undo_pruning_for(var)
+        return assignments, solution
 
     @staticmethod
     def gac(csp):
