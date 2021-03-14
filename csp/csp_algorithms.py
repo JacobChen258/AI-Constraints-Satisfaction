@@ -101,6 +101,7 @@ class CSPAlgorithms:
         # CSPUtil.undo_pruning_for(var) --> undoes all pruning that was caused by forward checking the given variable.
 
         assignments, solution_found = CSPAlgorithms.gac_helper(csp, False)
+        print(solution_found)
         if solution_found:
             return assignments
         return None

@@ -30,6 +30,11 @@ class TetrominoPuzzleConstraint(Constraint):
         for var in variables:
             if not assignments.get(var):
                 return False
+            row, col = assignments[var][0]
+            if not MatrixUtil.valid_position(self._grid, row, col):
+                return False
+        blocks_placed = []
+        for var in variables:
             row, col = assignments[var][0][0], assignments[var][0][1]
             rotate_count = assignments[var][1]
             tetromino = TetrominoUtil.copy(var)
@@ -38,8 +43,9 @@ class TetrominoPuzzleConstraint(Constraint):
             for r in range(len(pruned)):
                 for c in range(len(pruned[r])):
                     if pruned[r][c] != 0 and \
-                      not MatrixUtil.valid_position(self._grid, r+row, c+col):
+                            ((r+row, c+col) in blocks_placed or self._grid[r+row][c+col] != 0):
                         return False
+                    blocks_placed.append((r+row, c+col))
         return True
 
     def has_future(self, csp, var, val):
